@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">GitHub Search</string>
     <string name="p_name">Project Name</string>
+    <string name="org_name">Compani Name</string>
+    <string name="org_adress">Adress</string>
+    <string name="org_url">http://www.xxx.xx</string>
 </resources>

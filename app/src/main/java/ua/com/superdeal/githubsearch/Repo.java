@@ -1,27 +1,43 @@
 package ua.com.superdeal.githubsearch;
 
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Repo {
 
-    @SerializedName("groups")
+    @SerializedName("total_count")
     @Expose
-    private List<Organizations> organizationsList = new ArrayList<Organizations>();
+    private Integer totalCount;
+    @SerializedName("incomplete_results")
+    @Expose
+    private Boolean incompleteResults;
+    @SerializedName("items")
+    @Expose
+    private List<Item> items = null;
 
-    public List<Organizations> getOrganizationsList() {
-        return organizationsList;
+    public Integer getTotalCount() {
+        return totalCount;
     }
 
-    public void setOrganizationsList(List<Organizations> organizationsList) {
-        this.organizationsList = organizationsList;
+    public void setTotalCount(Integer totalCount) {
+        this.totalCount = totalCount;
     }
 
-    public Repo withOrganizations(List<Organizations> organizationsList) {
-        this.organizationsList=organizationsList;
-        return this;
+    public Boolean getIncompleteResults() {
+        return incompleteResults;
+    }
+
+    public void setIncompleteResults(Boolean incompleteResults) {
+        this.incompleteResults = incompleteResults;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+
+    public void setItems(List<Item> items) {
+        this.items = items;
     }
 }
+
