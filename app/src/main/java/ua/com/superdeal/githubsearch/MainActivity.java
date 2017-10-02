@@ -1,41 +1,36 @@
 package ua.com.superdeal.githubsearch;
 
-import android.app.Activity;
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import retrofit2.Response;
+import rx.android.schedulers.AndroidSchedulers;
 
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
-    private AutoCompleteTextView completeTextView;
+public class MainActivity extends AppCompatActivity {
+    private SearchView completeTextView;
     private List<Item> organizationsList;
     private List<String> item;
     private MyTask mt;
     private CardView cardView;
-    private TextView orgName,orgAdress, orgUrl;
+    private TextView orgName, orgAdress, orgUrl;
     private ImageView orgAvatar;
     private String searchChar;
+    private ArrayAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,70 +39,80 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         setContentView(R.layout.activity_main);
 
 
-
-        completeTextView = (AutoCompleteTextView) findViewById(R.id.editText);
-        cardView = (CardView)findViewById(R.id.cardView);
+        completeTextView = (SearchView) findViewById(R.id.editText);
+        cardView = (CardView) findViewById(R.id.cardView);
         cardView.setVisibility(View.GONE);
-        orgName=(TextView)findViewById(R.id.org_name);
-        orgAdress=(TextView)findViewById(R.id.org_adress);
-        orgUrl =(TextView)findViewById(R.id.org_url);
-        orgAvatar=(ImageView)findViewById(R.id.org_avatar);
+        orgName = (TextView) findViewById(R.id.org_name);
+        orgAdress = (TextView) findViewById(R.id.org_adress);
+        orgUrl = (TextView) findViewById(R.id.org_url);
+        orgAvatar = (ImageView) findViewById(R.id.org_avatar);
+        adapter = new ArrayAdapter<>(MainActivity.this,
+                android.R.layout.simple_dropdown_item_1line, item);
+        RxSearchView.fromSearchView(completeTextView)
+                .debounce(300, TimeUnit.MILLISECONDS)
+                .filter(item -> item.length() > 2)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(query -> {
+                    adapter.addAll(App.getApi().getData(searchChar));
+                    adapter.notifyDataSetChanged();
+//                    apiCallsTextView.setText("API CALLS: " + apiCalls++);
+                });
 
-
-        completeTextView.addTextChangedListener(new TextWatcher(){
-
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (i >=2){
-                    searchChar=completeTextView.getText().toString();
-                    mt = new MyTask(searchChar);
-                    mt.execute();
-                }
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        completeTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick (AdapterView < ? > adapterView, View view,int i, long l){
-                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
-
-
-                cardView.setVisibility(View.VISIBLE);
-                orgName.setText(organizationsList.get(i).getLogin());
-                orgAdress.setText(organizationsList.get(i).getType());
-                orgUrl.setText(organizationsList.get(i).getReposUrl());
-                Picasso.with(MainActivity.this)
-                        .load(organizationsList.get(i).getAvatarUrl())
-                        .error(R.mipmap.no_image_available)
-                        .into(orgAvatar);
-            }
-        });
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-
+//        completeTextView.addTextChangedListener(new TextWatcher(){
+//
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//                if (i >=2){
+//                    searchChar=completeTextView.getText().toString();
+//                    mt = new MyTask(searchChar);
+//                    mt.execute();
+//                }
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//
+//            }
+//        });
+//
+//        completeTextView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick (AdapterView < ? > adapterView, View view,int i, long l){
+//                InputMethodManager in = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                in.hideSoftInputFromWindow(view.getApplicationWindowToken(), 0);
+//
+//
+//                cardView.setVisibility(View.VISIBLE);
+//                orgName.setText(organizationsList.get(i).getLogin());
+//                orgAdress.setText(organizationsList.get(i).getType());
+//                orgUrl.setText(organizationsList.get(i).getReposUrl());
+//                Picasso.with(MainActivity.this)
+//                        .load(organizationsList.get(i).getAvatarUrl())
+//                        .error(R.mipmap.no_image_available)
+//                        .into(orgAvatar);
+//            }
+//        });
+//
+//    }
+//
+//    @Override
+//    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+//
+//    }
+//
+//    @Override
+//    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//
+//    }
+//
+//    @Override
+//    public void onNothingSelected(AdapterView<?> adapterView) {
+//
     }
 
 
@@ -115,8 +120,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         String searchChar;
         public ProgressDialog dialog;
         Context ctx;
+
         public MyTask(String searchChar) {
-            this.searchChar=searchChar;
+            this.searchChar = searchChar;
         }
 
         @Override
@@ -148,8 +154,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             organizationsList.addAll(response.body().getItems());
 
             for (int i = 0; i < organizationsList.size(); i++) {
-                if (organizationsList.get(i).getType().contains("Organization")){
-                item.add(organizationsList.get(i).getLogin());}
+                if (organizationsList.get(i).getType().contains("Organization")) {
+                    item.add(organizationsList.get(i).getLogin());
+                }
             }
             return item;
         }
@@ -157,8 +164,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         @Override
         protected void onPostExecute(List<String> strings) {
             super.onPostExecute(strings);
-            completeTextView.setAdapter(new ArrayAdapter<>(MainActivity.this,
-                    android.R.layout.simple_dropdown_item_1line, item));
+//            completeTextView.setAdapter(new ArrayAdapter<>(MainActivity.this,
+//                    android.R.layout.simple_dropdown_item_1line, item));
             dialog.dismiss();
 
         }
