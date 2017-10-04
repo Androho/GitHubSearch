@@ -19,22 +19,7 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="131dp" />
 
-    <SearchView
-        android:id="@+id/editText"
-        android:layout_width="368dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginTop="32dp"
-        android:completionThreshold="3"
-        app:layout_constraintBottom_toTopOf="@+id/cardView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_project"
-        tools:layout_editor_absoluteX="8dp">
-
-    </SearchView>
-
-    <!--<AutoCompleteTextView-->
+    <!--<SearchView-->
         <!--android:id="@+id/editText"-->
         <!--android:layout_width="368dp"-->
         <!--android:layout_height="wrap_content"-->
@@ -45,7 +30,22 @@
         <!--app:layout_constraintEnd_toEndOf="parent"-->
         <!--app:layout_constraintStart_toStartOf="parent"-->
         <!--app:layout_constraintTop_toBottomOf="@+id/tv_project"-->
-        <!--tools:layout_editor_absoluteX="8dp" />-->
+        <!--tools:layout_editor_absoluteX="8dp">-->
+
+    <!--</SearchView>-->
+
+    <AutoCompleteTextView
+        android:id="@+id/editText"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="32dp"
+        android:completionThreshold="3"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_project"
+        tools:layout_editor_absoluteX="8dp" />
 
     <android.support.v7.widget.CardView
         android:id="@+id/cardView"

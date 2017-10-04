@@ -8,21 +8,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.TextView;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import retrofit2.Response;
+import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity {
-    private SearchView completeTextView;
+    private AutoCompleteTextView completeTextView;
     private List<Item> organizationsList;
     private List<String> item;
     private MyTask mt;
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        completeTextView = (SearchView) findViewById(R.id.editText);
+        completeTextView = (AutoCompleteTextView) findViewById(R.id.editText);
         cardView = (CardView) findViewById(R.id.cardView);
         cardView.setVisibility(View.GONE);
         orgName = (TextView) findViewById(R.id.org_name);
@@ -48,14 +49,22 @@ public class MainActivity extends AppCompatActivity {
         orgAvatar = (ImageView) findViewById(R.id.org_avatar);
         adapter = new ArrayAdapter<>(MainActivity.this,
                 android.R.layout.simple_dropdown_item_1line, item);
+
+        organizationsList = new ArrayList<>();
+        item = new ArrayList<>();
+        Observable<Repo> resp = App.getApi().getData("f");
+        resp.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(repo -> {
+
+                });
+
         RxSearchView.fromSearchView(completeTextView)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .filter(item -> item.length() > 2)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(query -> {
-                    adapter.addAll(App.getApi().getData(searchChar));
-                    adapter.notifyDataSetChanged();
-//                    apiCallsTextView.setText("API CALLS: " + apiCalls++);
+                    //// TODO: 04.10.17  add to adapter
                 });
 
 //        completeTextView.addTextChangedListener(new TextWatcher(){
@@ -145,11 +154,11 @@ public class MainActivity extends AppCompatActivity {
             Response<Repo> response = null;
             organizationsList = new ArrayList<>();
             item = new ArrayList<>();
-            try {
-                response = App.getApi().getData(searchChar).execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            try {
+//             //   response = App.getApi().getData(searchChar).execute();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             response.body().getItems();
             organizationsList.addAll(response.body().getItems());
 
