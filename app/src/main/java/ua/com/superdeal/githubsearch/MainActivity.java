@@ -1,8 +1,5 @@
 package ua.com.superdeal.githubsearch;
 
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -19,19 +16,18 @@ import java.util.concurrent.TimeUnit;
 import retrofit2.Response;
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 
 public class MainActivity extends AppCompatActivity {
     private AutoCompleteTextView completeTextView;
     private List<Item> organizationsList;
-    private List<String> item;
-    private MyTask mt;
+    private Observable<Repo> item;
     private CardView cardView;
     private TextView orgName, orgAdress, orgUrl;
     private ImageView orgAvatar;
     private String searchChar;
     private ArrayAdapter adapter;
+    private Response<Repo> response = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,23 +43,25 @@ public class MainActivity extends AppCompatActivity {
         orgAdress = (TextView) findViewById(R.id.org_adress);
         orgUrl = (TextView) findViewById(R.id.org_url);
         orgAvatar = (ImageView) findViewById(R.id.org_avatar);
-        adapter = new ArrayAdapter<>(MainActivity.this,
-                android.R.layout.simple_dropdown_item_1line, item);
+//        adapter = new ArrayAdapter<>(MainActivity.this,
+//                android.R.layout.simple_dropdown_item_1line, item);
 
         organizationsList = new ArrayList<>();
-        item = new ArrayList<>();
-        Observable<Repo> resp = App.getApi().getData("f");
-        resp.subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(repo -> {
 
-                });
+//        Observable<Repo> resp = App.getApi().getData("f");
+//        resp.subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(repo -> {
+//
+//                });
 
         RxSearchView.fromSearchView(completeTextView)
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .filter(item -> item.length() > 2)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(query -> {
+                    item =  App.getApi().getData(query);
+                             //organizationsList= repo.getItems());
                     //// TODO: 04.10.17  add to adapter
                 });
 
@@ -125,59 +123,59 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public class MyTask extends AsyncTask<Void, Void, List<String>> {
-        String searchChar;
-        public ProgressDialog dialog;
-        Context ctx;
+//    public class MyTask extends AsyncTask<Object, Object, Void> {
+//        String searchChar;
+//        public ProgressDialog dialog;
+//        Context ctx;
 
-        public MyTask(String searchChar) {
-            this.searchChar = searchChar;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            dialog = new ProgressDialog(MainActivity.this);
-            dialog.setMessage("Поиск...");
-            dialog.setIndeterminate(true);
-            dialog.setCancelable(true);
-            dialog.show();
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            super.onProgressUpdate(values);
-        }
-
-        @Override
-        protected List<String> doInBackground(Void... voids) {
-            Response<Repo> response = null;
-            organizationsList = new ArrayList<>();
-            item = new ArrayList<>();
-//            try {
-//             //   response = App.getApi().getData(searchChar).execute();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-            response.body().getItems();
-            organizationsList.addAll(response.body().getItems());
-
-            for (int i = 0; i < organizationsList.size(); i++) {
-                if (organizationsList.get(i).getType().contains("Organization")) {
-                    item.add(organizationsList.get(i).getLogin());
-                }
-            }
-            return item;
-        }
-
-        @Override
-        protected void onPostExecute(List<String> strings) {
-            super.onPostExecute(strings);
-//            completeTextView.setAdapter(new ArrayAdapter<>(MainActivity.this,
-//                    android.R.layout.simple_dropdown_item_1line, item));
-            dialog.dismiss();
-
-        }
-    }
+//        public MyTask(String searchChar) {
+//            this.searchChar = searchChar;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            dialog = new ProgressDialog(MainActivity.this);
+//            dialog.setMessage("Поиск...");
+//            dialog.setIndeterminate(true);
+//            dialog.setCancelable(true);
+//            dialog.show();
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Object... values) {
+//            super.onProgressUpdate(values);
+//        }
+//
+//        @Override
+//        protected Void doInBackground(Object... voids) {
+//            Response<Repo> response = null;
+////            organizationsList = new ArrayList<>();
+////            item = new ArrayList<>();
+//////            try {
+//////             //   response = App.getApi().getData(searchChar).execute();
+//////            } catch (IOException e) {
+//////                e.printStackTrace();
+//////            }
+////            response.body().getItems();
+////            organizationsList.addAll(response.body().getItems());
+////
+////            for (int i = 0; i < organizationsList.size(); i++) {
+////                if (organizationsList.get(i).getType().contains("Organization")) {
+////                   // item.add(organizationsList.get(i).getLogin());
+////                }
+////            }
+////            return ;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void strings) {
+//            super.onPostExecute(strings);
+////            completeTextView.setAdapter(new ArrayAdapter<>(MainActivity.this,
+////                    android.R.layout.simple_dropdown_item_1line, item));
+//            dialog.dismiss();
+//
+//        }
+//    }
 
 }
